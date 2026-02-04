@@ -82,56 +82,28 @@ class FreshnessChecker:
     
     def _get_files_for_trade_date(self, trade_date: str) -> List[Path]:
         """
-        获取指定交易日的文件列表
+        获取数据目录中的所有CSV文件
         
-        匹配规则：文件名以 YYYY-MM-DD 开头，或以 _YYYY-MM-DD 分隔
-        避免字符串包含检查导致的误匹配（如 2024-01-15 误匹配 xxx_2024-01-15_xxx.csv）
+        注意：文件名是股票代码（如 sh600018.csv），不是日期命名。
+        新鲜度通过文件的 mtime（修改时间）判断，不是文件名。
         
         Args:
-            trade_date: 交易日期 (格式: YYYY-MM-DD 或 YYYYMMDD)
+            trade_date: 交易日期 (格式: YYYY-MM-DD)，仅用于日志记录
             
         Returns:
             文件路径列表
         """
-        import re
-        
         files = []
         dataset_paths = self._get_dataset_paths()
-        
-        # 标准化日期格式
-        normalized_date = trade_date.replace('-', '')
-        
-        # 匹配模式（避免误匹配如 xxx_2024-01-15_xxx.csv）：
-        # 1. 日期在文件名开头，后接下划线或点: 2024-01-15_*.csv 或 2024-01-15.csv
-        # 2. 日期前是下划线，后是点(扩展名): *_2024-01-15.csv
-        # 不会匹配：xxx_2024-01-15_xxx.csv (日期在中间，前后都有文本)
-        # 不会匹配：2024-01-150.csv (日期不完整，后接数字)
-        pattern_original_start = re.compile(rf'^{re.escape(trade_date)}[_\.]')
-        pattern_original_underscore = re.compile(rf'_{re.escape(trade_date)}\.')
-        pattern_normalized_start = re.compile(rf'^{re.escape(normalized_date)}[_\.]')
-        pattern_normalized_underscore = re.compile(rf'_{re.escape(normalized_date)}\.')
         
         for dataset_path in dataset_paths:
             if not dataset_path.exists():
                 continue
                 
-            # 递归查找所有文件
-            for file_path in dataset_path.rglob('*'):
-                if file_path.is_file():
-                    # 检查文件名是否匹配日期模式
-                    name = file_path.name
-                    is_match = (
-                        pattern_original_start.search(name) or
-                        pattern_original_underscore.search(name) or
-                        pattern_normalized_start.search(name) or
-                        pattern_normalized_underscore.search(name)
-                    )
-                    if is_match:
-                        files.append(file_path)
-                    # 也检查父目录名（目录名使用简单包含检查）
-                    elif normalized_date in str(file_path.parent) or trade_date in str(file_path.parent):
-                        files.append(file_path)
-        
+            # 遍历目录中的所有CSV文件
+            for csv_file in dataset_path.rglob("*.csv"):
+                files.append(csv_file)
+                    
         return files
     
     def _calculate_percentile_mtime(self, mtimes: List[float], percentile: float = 0.85) -> Optional[float]:
