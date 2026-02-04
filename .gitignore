@@ -73,3 +73,6 @@ deploy_key
 deploy_key.pub
 *.pem
 *.key
+
+# 项目自己生成的数据文件
+*hub_state.json
