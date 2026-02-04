@@ -51,7 +51,7 @@ foreach ($location in $configLocations) {
 $ServerPath = Join-Path $HubDir 'server.py'
 
 Write-Host "=========================================="
-Write-Host "DataHubSync Hub Startup (PowerShell)"
+Write-Host "DataHubSync Hub Check (PowerShell)"
 Write-Host "=========================================="
 Write-Host "Hub Dir:    $HubDir"
 Write-Host "Config:     $ConfigPath"
@@ -73,6 +73,13 @@ if (-not $ConfigPath -or -not (Test-Path $ConfigPath)) {
     $errors += "Config file not found in any expected location"
 } else {
     Write-Ok "Config file found: $ConfigPath"
+}
+
+# Check server file
+if (-not (Test-Path $ServerPath)) {
+    $errors += "Server file not found: $ServerPath"
+} else {
+    Write-Ok "Server file exists"
 }
 
 if ($errors.Count -eq 0) {
@@ -111,7 +118,16 @@ print(json.dumps(output))
         # Write Python code to temp file
         $py | Out-File -FilePath $tempScript -Encoding UTF8
         $configJson = Invoke-Expression "$Python $tempScript"
-        $cfg = $configJson | ConvertFrom-Json
+        
+        if (-not $configJson -or $configJson.Trim() -eq "") {
+            $errors += "No output from config parsing script"
+        } else {
+            try {
+                $cfg = $configJson | ConvertFrom-Json
+            } catch {
+                $errors += "Failed to parse JSON output: $_. Raw output was: $configJson"
+            }
+        }
     } catch {
         $errors += "Failed to parse config.yaml: $_"
     } finally {
@@ -124,7 +140,7 @@ print(json.dumps(output))
 
 if ($errors.Count -eq 0) {
     if (-not $cfg.data_root) {
-        $errors += "server.data_root is missing in config"
+        $errors += "data_root is missing in config"
     } elseif (-not (Test-Path $cfg.data_root)) {
         $errors += "data_root directory not found: $($cfg.data_root)"
     } else {
@@ -132,7 +148,7 @@ if ($errors.Count -eq 0) {
     }
 
     if (-not $cfg.cache_dir) {
-        $errors += "server.cache_dir is missing in config"
+        $errors += "cache_dir is missing in config"
     } elseif (-not (Test-Path $cfg.cache_dir)) {
         $errors += "cache_dir directory not found: $($cfg.cache_dir)"
     } else {
@@ -159,19 +175,10 @@ if ($errors.Count -gt 0) {
 }
 
 Write-Host ""
-Write-Ok "All checks passed. Starting hub server..."
+Write-Ok "All checks passed. Ready to start hub server!"
 Write-Host ""
-
-try {
-    Invoke-Expression "$Python $ServerPath --config $ConfigPath"
-    Write-Host ""
-    Write-Host "输入任意键后退出..."
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit $LASTEXITCODE
-} catch {
-    Write-Err "Server failed to start: $_"
-    Write-Host ""
-    Write-Host "输入任意键后退出..."
-    $null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")
-    exit 1
-}
+Write-Host "To start the server, run:"
+Write-Host "python `"$ServerPath`" --config `"$ConfigPath`""
+Write-Host ""
+Write-Host "输入任意键后退出..."
+$null = $Host.UI.RawUI.ReadKey("NoEcho,IncludeKeyDown")

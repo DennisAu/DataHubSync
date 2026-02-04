@@ -1,0 +1,26 @@
+{
+  "stock-trading-data-pro": {
+    "status": "not_fresh",
+    "state_updated_at": "2026-02-04T22:38:58.796381",
+    "freshness": {
+      "total_count": 11610,
+      "fresh_count": 5469,
+      "fresh_ratio": 0.4711,
+      "last_updated": "2026-02-04T08:29:53.368729",
+      "is_fresh": false
+    },
+    "last_checked": "2026-02-04T22:38:58"
+  },
+  "stock-fin-data-xbx": {
+    "status": "not_fresh",
+    "state_updated_at": "2026-02-04T22:38:59.207553",
+    "freshness": {
+      "total_count": 11610,
+      "fresh_count": 5469,
+      "fresh_ratio": 0.4711,
+      "last_updated": "2026-02-04T08:29:53.368729",
+      "is_fresh": false
+    },
+    "last_checked": "2026-02-04T22:38:59"
+  }
+}

@@ -1,0 +1,32 @@
+2026-02-04 22:38:58,340 [INFO] Logging configured
+2026-02-04 22:38:58,340 [INFO] Loaded configuration from E:\projects\DataAborder\config.yaml
+2026-02-04 22:38:58,340 [INFO] State file not found, initializing empty state: hub\hub_state.json
+2026-02-04 22:38:58,340 [INFO] StateManager initialized: state_file=hub/hub_state.json
+2026-02-04 22:38:58,340 [INFO] StateManager initialized with state file: hub/hub_state.json
+2026-02-04 22:38:58,340 [INFO] Signal handlers registered
+2026-02-04 22:38:58,389 [INFO] Packager initialized: cache_dir=F:\xbx_datas\.cache, keep_versions=2
+2026-02-04 22:38:58,389 [INFO] Scheduler initialized: interval=10min, debounce=30s
+2026-02-04 22:38:58,389 [INFO] Scheduler main loop started, interval=600s
+2026-02-04 22:38:58,389 [INFO] Scheduler started
+2026-02-04 22:38:58,389 [INFO] Checking freshness for 2 datasets
+2026-02-04 22:38:58,389 [INFO] Last trade date: 2026-02-03
+2026-02-04 22:38:58,389 [INFO] Checking dataset: stock-trading-data-pro, trade_date=2026-02-03
+2026-02-04 22:38:58,389 [INFO] State updated for stock-trading-data-pro: {'status': 'checking'}
+2026-02-04 22:38:58,389 [INFO] 检查数据新鲜度: trade_date=2026-02-03
+2026-02-04 22:38:58,794 [INFO] 新鲜度检查结果: total=11610, fresh=5469, ratio=47.11%, last_updated=2026-02-04T08:29:53.368729
+2026-02-04 22:38:58,796 [INFO] Freshness check result for stock-trading-data-pro: ratio=0.4711, threshold=0.85
+2026-02-04 22:38:58,796 [INFO] State updated for stock-trading-data-pro: {'freshness': {'total_count': 11610, 'fresh_count': 5469, 'fresh_ratio': 0.4711, 'last_updated': '2026-02-04T08:29:53.368729', 'is_fresh': False}, 'last_checked': '2026-02-04T22:38:58'}
+2026-02-04 22:38:58,796 [INFO] Dataset stock-trading-data-pro not fresh enough, skipping
+2026-02-04 22:38:58,796 [INFO] State updated for stock-trading-data-pro: {'status': 'not_fresh'}
+2026-02-04 22:38:58,796 [INFO] Checking dataset: stock-fin-data-xbx, trade_date=2026-02-03
+2026-02-04 22:38:58,796 [INFO] State updated for stock-fin-data-xbx: {'status': 'checking'}
+2026-02-04 22:38:58,796 [INFO] 检查数据新鲜度: trade_date=2026-02-03
+2026-02-04 22:38:58,894 [INFO] Scheduler started successfully
+2026-02-04 22:38:59,205 [INFO] 新鲜度检查结果: total=11610, fresh=5469, ratio=47.11%, last_updated=2026-02-04T08:29:53.368729
+2026-02-04 22:38:59,205 [INFO] Freshness check result for stock-fin-data-xbx: ratio=0.4711, threshold=0.85
+2026-02-04 22:38:59,207 [INFO] State updated for stock-fin-data-xbx: {'freshness': {'total_count': 11610, 'fresh_count': 5469, 'fresh_ratio': 0.4711, 'last_updated': '2026-02-04T08:29:53.368729', 'is_fresh': False}, 'last_checked': '2026-02-04T22:38:59'}
+2026-02-04 22:38:59,207 [INFO] Dataset stock-fin-data-xbx not fresh enough, skipping
+2026-02-04 22:38:59,207 [INFO] State updated for stock-fin-data-xbx: {'status': 'not_fresh'}
+2026-02-04 22:39:00,181 [INFO] DataHubServer initialized: 0.0.0.0:8080
+2026-02-04 22:39:00,181 [INFO] Starting HTTP server (Press Ctrl+C to stop)...
+2026-02-04 22:39:00,181 [INFO] Starting HTTP server on 0.0.0.0:8080
