@@ -1,0 +1,21 @@
+# DataBorder Hub 端依赖
+# 核心HTTP和Web服务
+http.server>=0.1
+socketserver>=0.1
+
+# 数据处理
+PyYAML>=6.0
+
+# 文件操作和压缩
+pathlib>=1.0.4
+
+# 时间处理
+datetime>=5.0
+
+# 系统和进程管理
+threading>=1.0
+signal>=0.1
+
+# 可选：更好的性能
+# psutil>=5.9.0  # 系统监控
+# gunicorn>=20.1.0  # WSGI服务器（如果使用）

@@ -27,7 +27,26 @@
 ## 项目结构
 
 ```
-/opt/projects/DataHubSync/
+DataBorder/
+├── hub/                      # 🎯 独立Hub端项目
+│   ├── src/                 # Hub端源码
+│   ├── tests/               # Hub端测试
+│   ├── scripts/             # 部署脚本
+│   ├── config/              # 配置文件
+│   └── README.md           # Hub端文档
+├── client/                  # 🎯 独立客户端项目
+│   ├── src/                # 客户端源码
+│   ├── tests/              # 客户端测试
+│   ├── scripts/            # 部署脚本
+│   ├── config/             # 配置文件
+│   └── README.md          # 客户端文档
+├── requirements/            # 需求文档
+│   ├── TODO.md
+│   ├── REQUIREMENTS_CLOUDFLARE_TUNNEL.md
+│   └── SOFTWARE_DESIGN_CLOUDFLARE_TUNNEL.md
+├── docs/                   # 项目文档
+└── README.md              # 本文件
+```
 ├── requirements/          # 需求文档
 │   ├── REQUIREMENTS_CLOUDFLARE_TUNNEL.md
 │   ├── SOFTWARE_DESIGN_CLOUDFLARE_TUNNEL.md
@@ -43,26 +62,60 @@
 
 ## 快速开始
 
-### hub端（Windows）
+### Hub端（Windows）
 
 ```bash
-# 1. 安装 cloudflared
-# 2. 配置 Tunnel
-# 3. 运行 HTTP 服务器
-cd /opt/projects/DataHubSync
-python src/server.py
+# 进入Hub端目录
+cd hub
+
+# 安装依赖
+pip install -r requirements.txt
+
+# 配置（编辑 config/config.yaml）
+# 设置数据目录、端口等参数
+
+# 测试
+bash scripts/test_hub.sh
+
+# 启动服务
+bash scripts/start_hub.sh
 ```
 
 ### 客户端（Linux）
 
 ```bash
-# 1. 部署同步脚本
-cd /opt/stock-data-sync
-python sync_client.py
+# 进入客户端目录
+cd client
 
-# 2. 配置定时任务
-crontab -e
-# 添加: 50 8,16 * * * /opt/stock-data-sync/sync.sh
+# 安装依赖
+pip install -r requirements.txt
+
+# 配置（编辑 config/config.yaml）
+# 设置Hub服务器地址、数据集等
+
+# 测试
+bash scripts/test_client.sh
+
+# 部署（自动配置crontab）
+sudo bash scripts/install_client.sh --setup-crontab
+```
+
+### 独立部署
+
+两个项目都可以独立部署：
+
+```bash
+# Hub端独立部署
+tar -czf hub-package.tar.gz hub/
+scp hub-package.tar.gz server:~/
+tar -xzf hub-package.tar.gz
+cd hub && bash scripts/start_hub.sh
+
+# 客户端独立部署
+tar -czf client-package.tar.gz client/
+scp client-package.tar.gz client:~/
+tar -xzf client-package.tar.gz
+cd client && sudo bash scripts/install_client.sh
 ```
 
 ## 开发流程

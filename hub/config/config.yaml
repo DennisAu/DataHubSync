@@ -1,0 +1,35 @@
+hub:
+  port: 8080
+  host: "0.0.0.0"
+  data_dir: "F:\\xbx_datas"
+  cache_dir: "F:\\xbx_datas\\.cache"
+  state_file: "hub_state.json"
+  calendar_file: "config/trading_calendar.json"
+  
+  # 调度器配置
+  scheduler:
+    interval_minutes: 10
+    debounce_seconds: 30
+    
+  # 打包配置
+  packaging:
+    format: "zip"
+    keep_versions: 2
+
+# 数据集配置
+datasets:
+  - name: "stock-trading-data-pro"
+    path: "stock-trading-data-pro"
+    freshness_threshold: 0.85
+  - name: "stock-fin-data-xbx"
+    path: "stock-fin-data-xbx"
+    freshness_threshold: 0.85
+  - name: "stock-etf-trading-data"
+    path: "stock-etf-trading-data"
+    freshness_threshold: 0.85
+
+# 日志配置
+logging:
+  level: INFO
+  file: "logs/hub.log"
+  format: "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
