@@ -5,6 +5,7 @@ StateManager - 状态管理器
 
 import json
 import logging
+import threading
 from pathlib import Path
 from typing import Dict, Any, Optional
 from datetime import datetime
@@ -31,6 +32,7 @@ class StateManager:
         """
         self.state_file = Path(state_file)
         self._state: Dict[str, Dict[str, Any]] = {}
+        self._lock = threading.RLock()  # 线程锁，保护并发访问
         self._load()
         logger.info(f"StateManager initialized: state_file={state_file}")
     
@@ -40,21 +42,22 @@ class StateManager:
         
         如果文件不存在或格式错误，初始化空状态
         """
-        if not self.state_file.exists():
-            logger.info(f"State file not found, initializing empty state: {self.state_file}")
-            self._state = {}
-            return
-        
-        try:
-            with open(self.state_file, 'r', encoding='utf-8') as f:
-                self._state = json.load(f)
-            logger.debug(f"State loaded from {self.state_file}")
-        except json.JSONDecodeError as e:
-            logger.warning(f"Failed to parse state file, initializing empty state: {e}")
-            self._state = {}
-        except Exception as e:
-            logger.error(f"Error loading state file: {e}")
-            self._state = {}
+        with self._lock:
+            if not self.state_file.exists():
+                logger.info(f"State file not found, initializing empty state: {self.state_file}")
+                self._state = {}
+                return
+            
+            try:
+                with open(self.state_file, 'r', encoding='utf-8') as f:
+                    self._state = json.load(f)
+                logger.debug(f"State loaded from {self.state_file}")
+            except json.JSONDecodeError as e:
+                logger.warning(f"Failed to parse state file, initializing empty state: {e}")
+                self._state = {}
+            except Exception as e:
+                logger.error(f"Error loading state file: {e}")
+                self._state = {}
     
     def _save(self) -> None:
         """
@@ -62,16 +65,17 @@ class StateManager:
         
         自动创建父目录（如果不存在）
         """
-        try:
-            # 确保父目录存在
-            self.state_file.parent.mkdir(parents=True, exist_ok=True)
-            
-            with open(self.state_file, 'w', encoding='utf-8') as f:
-                json.dump(self._state, f, ensure_ascii=False, indent=2)
-            
-            logger.debug(f"State saved to {self.state_file}")
-        except Exception as e:
-            logger.error(f"Error saving state file: {e}")
+        with self._lock:
+            try:
+                # 确保父目录存在
+                self.state_file.parent.mkdir(parents=True, exist_ok=True)
+                
+                with open(self.state_file, 'w', encoding='utf-8') as f:
+                    json.dump(self._state, f, ensure_ascii=False, indent=2)
+                
+                logger.debug(f"State saved to {self.state_file}")
+            except Exception as e:
+                logger.error(f"Error saving state file: {e}")
     
     def get(self, dataset: str) -> Dict[str, Any]:
         """
@@ -83,7 +87,8 @@ class StateManager:
         Returns:
             数据集状态字典，如果不存在返回空字典
         """
-        return self._state.get(dataset, {}).copy()
+        with self._lock:
+            return self._state.get(dataset, {}).copy()
     
     def update(self, dataset: str, **kwargs) -> Dict[str, Any]:
         """
@@ -102,22 +107,23 @@ class StateManager:
             ...                      fresh_ratio=0.92,
             ...                      status="ready")
         """
-        # 如果数据集不存在，创建空字典
-        if dataset not in self._state:
-            self._state[dataset] = {}
-        
-        # 更新字段
-        self._state[dataset].update(kwargs)
-        
-        # 自动添加更新时间
-        self._state[dataset]['state_updated_at'] = datetime.now().isoformat()
-        
-        # 持久化到文件
-        self._save()
-        
-        logger.info(f"State updated for {dataset}: {kwargs}")
-        
-        return self._state[dataset].copy()
+        with self._lock:
+            # 如果数据集不存在，创建空字典
+            if dataset not in self._state:
+                self._state[dataset] = {}
+            
+            # 更新字段
+            self._state[dataset].update(kwargs)
+            
+            # 自动添加更新时间
+            self._state[dataset]['state_updated_at'] = datetime.now().isoformat()
+            
+            # 持久化到文件（在锁内调用_save，但_save内部也加锁，使用RLock可重入）
+            self._save()
+            
+            logger.info(f"State updated for {dataset}: {kwargs}")
+            
+            return self._state[dataset].copy()
     
     def get_all(self) -> Dict[str, Dict[str, Any]]:
         """
@@ -126,7 +132,9 @@ class StateManager:
         Returns:
             所有数据集状态的字典，格式为 {dataset_name: state_dict}
         """
-        return self._state.copy()
+        with self._lock:
+            # 返回深拷贝，防止外部修改影响内部状态
+            return {k: v.copy() for k, v in self._state.items()}
     
     def delete(self, dataset: str) -> bool:
         """
@@ -138,12 +146,13 @@ class StateManager:
         Returns:
             是否成功删除
         """
-        if dataset in self._state:
-            del self._state[dataset]
-            self._save()
-            logger.info(f"State deleted for {dataset}")
-            return True
-        return False
+        with self._lock:
+            if dataset in self._state:
+                del self._state[dataset]
+                self._save()
+                logger.info(f"State deleted for {dataset}")
+                return True
+            return False
     
     def clear(self) -> None:
         """
@@ -151,9 +160,10 @@ class StateManager:
         
         谨慎使用！这会删除所有数据集的状态记录
         """
-        self._state = {}
-        self._save()
-        logger.warning("All states cleared")
+        with self._lock:
+            self._state = {}
+            self._save()
+            logger.warning("All states cleared")
     
     def get_last_updated(self, dataset: str) -> Optional[str]:
         """

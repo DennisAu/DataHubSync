@@ -190,25 +190,44 @@ class DataHubHandler(BaseHTTPRequestHandler):
         
         支持 Range 请求实现断点续传
         """
-        # 验证数据集名称
-        if not dataset_name or '..' in dataset_name or '/' in dataset_name:
+        # 验证数据集名称格式
+        if not dataset_name or '/' in dataset_name or '\\' in dataset_name:
             self._send_json(400, {'error': 'Invalid dataset name'})
             return
         
-        # 查找包文件
-        cache_dir = self.config.get('server', {}).get('cache_dir', '.cache')
-        package_path = self._find_latest_package(dataset_name, cache_dir)
+        # 查找最新的 zip 包
+        cache_dir = Path(self.config.get('server', {}).get('cache_dir', '.cache')).resolve()
         
-        if not package_path or not Path(package_path).exists():
-            self._send_json(404, {'error': f'Package not found for dataset: {dataset_name}'})
+        # 安全地构建路径模式
+        try:
+            pattern = f"{dataset_name}_*.zip"
+            zip_files = sorted(cache_dir.glob(pattern), key=os.path.getmtime, reverse=True)
+        except Exception:
+            self._send_json(500, {'error': 'Internal error'})
+            return
+        
+        if not zip_files:
+            self._send_json(404, {'error': 'Package not found'})
+            return
+        
+        zip_path = zip_files[0]
+        
+        # 最终安全检查：确保文件在缓存目录内
+        try:
+            zip_path_resolved = zip_path.resolve()
+            if not str(zip_path_resolved).startswith(str(cache_dir)):
+                self._send_json(403, {'error': 'Forbidden'})
+                return
+        except Exception:
+            self._send_json(500, {'error': 'Internal error'})
             return
         
         # 检查 Range 请求头
         range_header = self.headers.get('Range')
         if range_header:
-            self._send_range_file(package_path, range_header)
+            self._send_range_file(str(zip_path), range_header)
         else:
-            self._send_file(package_path)
+            self._send_file(str(zip_path))
     
     def _send_json(self, status: int, data: Dict[str, Any]) -> None:
         """

@@ -29,7 +29,7 @@ sys.path.insert(0, str(Path(__file__).parent / 'src'))
 
 from state_manager import StateManager
 from scheduler import Scheduler
-from http_server import DataHubServer
+from http_server import DataHubServer, DataHubHandler
 
 
 # 全局变量，用于信号处理
@@ -231,10 +231,8 @@ def main() -> int:
             """定期更新服务器的状态引用"""
             while scheduler.is_running():
                 try:
-                    # 更新服务器的状态引用
-                    DataHubServer.update_states = state_manager.get_all()
-                    if hasattr(server, 'handler_class'):
-                        server.handler_class.dataset_states = state_manager.get_all()
+                    # 更新 DataHubHandler 的类属性，使其在所有请求中可用
+                    DataHubHandler.dataset_states = state_manager.get_all()
                     time.sleep(5)  # 每5秒更新一次
                 except Exception as e:
                     logger.warning(f"Failed to update server states: {e}")

@@ -80,16 +80,15 @@ class TestPackager(unittest.TestCase):
         zip_path = Path(result['zip_path'])
         self.assertTrue(zip_path.exists())
         
-        # 验证 zip 内容 - 只保留文件名
+        # 验证 zip 内容 - 保留相对路径结构
         with zipfile.ZipFile(zip_path, 'r') as zf:
             namelist = zf.namelist()
             self.assertEqual(len(namelist), 3)
-            # 应该只有文件名，没有路径
+            # 根目录文件
             self.assertIn("file1.csv", namelist)
             self.assertIn("file2.csv", namelist)
-            self.assertIn("file3.csv", namelist)
-            # 不应该包含子目录路径
-            self.assertNotIn("subdir/file3.csv", namelist)
+            # 子目录文件保留相对路径
+            self.assertIn("subdir/file3.csv", namelist)
     
     def test_package_uses_deflated_compression(self):
         """测试使用 ZIP_DEFLATED 压缩"""
@@ -311,8 +310,8 @@ class TestPackager(unittest.TestCase):
         self.assertEqual(len(versions_a), 1)
         self.assertEqual(len(versions_b), 1)
     
-    def test_package_preserves_only_filename(self):
-        """测试 zip 中只保留文件名，不保留目录结构"""
+    def test_package_preserves_relative_path(self):
+        """测试 zip 中保留相对路径结构，避免同名文件覆盖"""
         dataset_name = "test_dataset"
         
         # 创建嵌套目录结构
@@ -325,19 +324,16 @@ class TestPackager(unittest.TestCase):
         
         result = self.packager.package(dataset_name, str(self.data_dir))
         
-        # 验证 zip 内容 - 所有文件都只在根级别
+        # 验证 zip 内容 - 保留相对路径结构
         with zipfile.ZipFile(result['zip_path'], 'r') as zf:
             namelist = zf.namelist()
             self.assertEqual(len(namelist), 3)
             
-            # 所有文件名都不包含路径分隔符
-            for name in namelist:
-                self.assertNotIn('/', name)
-                self.assertNotIn('\\', name)
-            
+            # 根目录文件
             self.assertIn("root.txt", namelist)
-            self.assertIn("level1.txt", namelist)
-            self.assertIn("level2.txt", namelist)
+            # 子目录文件保留相对路径
+            self.assertIn("level1/level1.txt", namelist)
+            self.assertIn("level1/level2/level2.txt", namelist)
 
 
 class TestPackagerIntegration(unittest.TestCase):

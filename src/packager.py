@@ -95,8 +95,8 @@ class Packager:
                 # 递归遍历数据目录
                 for file_path in data_path.rglob('*'):
                     if file_path.is_file():
-                        # 只保留文件名（不含路径）作为 zip 内路径
-                        arcname = file_path.name
+                        # 保留相对于数据目录的相对路径结构
+                        arcname = file_path.relative_to(data_path)
                         zf.write(file_path, arcname)
                         file_count += 1
                         logger.debug(f"Added to zip: {file_path} -> {arcname}")
