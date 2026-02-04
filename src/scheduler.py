@@ -225,7 +225,8 @@ class Scheduler:
         
         stable_result = self.freshness_checker.check_stable(
             trade_date,
-            debounce_seconds=self.debounce_seconds
+            debounce_seconds=self.debounce_seconds,
+            stop_event=self._stop_event
         )
         
         if stable_result is None:

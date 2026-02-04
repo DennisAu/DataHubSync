@@ -61,8 +61,9 @@ class StateManager:
     
     def _save(self) -> None:
         """
-        保存状态到 JSON 文件
+        原子保存状态到 JSON 文件
         
+        使用"临时文件 + 原子重命名"模式，防止写入过程中崩溃导致文件损坏
         自动创建父目录（如果不存在）
         """
         with self._lock:
@@ -70,11 +71,20 @@ class StateManager:
                 # 确保父目录存在
                 self.state_file.parent.mkdir(parents=True, exist_ok=True)
                 
-                with open(self.state_file, 'w', encoding='utf-8') as f:
+                # 写入临时文件
+                temp_file = self.state_file.with_suffix('.tmp')
+                with open(temp_file, 'w', encoding='utf-8') as f:
                     json.dump(self._state, f, ensure_ascii=False, indent=2)
+                
+                # 原子重命名（Windows 和 Linux 都支持）
+                import os
+                os.replace(temp_file, self.state_file)
                 
                 logger.debug(f"State saved to {self.state_file}")
             except Exception as e:
+                # 清理临时文件
+                if 'temp_file' in locals() and temp_file.exists():
+                    temp_file.unlink()
                 logger.error(f"Error saving state file: {e}")
     
     def get(self, dataset: str) -> Dict[str, Any]:

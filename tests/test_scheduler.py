@@ -165,8 +165,12 @@ class TestScheduler(unittest.TestCase):
         state = self.state_manager.get('test-dataset')
         self.assertEqual(state['status'], 'unstable')
         
-        # 防抖检查应该被调用
-        mock_check_stable.assert_called_once_with('20240112', debounce_seconds=1)
+        # 防抖检查应该被调用（验证主要参数，stop_event 由调度器内部传入）
+        mock_check_stable.assert_called_once()
+        call_args = mock_check_stable.call_args
+        self.assertEqual(call_args[0][0], '20240112')  # trade_date
+        self.assertEqual(call_args[1]['debounce_seconds'], 1)
+        self.assertIn('stop_event', call_args[1])  # 确保传入了 stop_event
     
     @patch('packager.Packager.package')
     @patch('freshness_checker.FreshnessChecker.check_stable')

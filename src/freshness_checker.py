@@ -82,7 +82,10 @@ class FreshnessChecker:
     
     def _get_files_for_trade_date(self, trade_date: str) -> List[Path]:
         """
-        获取指定交易日期的所有相关文件
+        获取指定交易日的文件列表
+        
+        匹配规则：文件名以 YYYY-MM-DD 开头，或以 _YYYY-MM-DD 分隔
+        避免字符串包含检查导致的误匹配（如 2024-01-15 误匹配 xxx_2024-01-15_xxx.csv）
         
         Args:
             trade_date: 交易日期 (格式: YYYY-MM-DD 或 YYYYMMDD)
@@ -90,11 +93,23 @@ class FreshnessChecker:
         Returns:
             文件路径列表
         """
+        import re
+        
         files = []
         dataset_paths = self._get_dataset_paths()
         
         # 标准化日期格式
         normalized_date = trade_date.replace('-', '')
+        
+        # 匹配模式（避免误匹配如 xxx_2024-01-15_xxx.csv）：
+        # 1. 日期在文件名开头，后接下划线或点: 2024-01-15_*.csv 或 2024-01-15.csv
+        # 2. 日期前是下划线，后是点(扩展名): *_2024-01-15.csv
+        # 不会匹配：xxx_2024-01-15_xxx.csv (日期在中间，前后都有文本)
+        # 不会匹配：2024-01-150.csv (日期不完整，后接数字)
+        pattern_original_start = re.compile(rf'^{re.escape(trade_date)}[_\.]')
+        pattern_original_underscore = re.compile(rf'_{re.escape(trade_date)}\.')
+        pattern_normalized_start = re.compile(rf'^{re.escape(normalized_date)}[_\.]')
+        pattern_normalized_underscore = re.compile(rf'_{re.escape(normalized_date)}\.')
         
         for dataset_path in dataset_paths:
             if not dataset_path.exists():
@@ -103,10 +118,17 @@ class FreshnessChecker:
             # 递归查找所有文件
             for file_path in dataset_path.rglob('*'):
                 if file_path.is_file():
-                    # 检查文件名是否包含交易日期
-                    if normalized_date in file_path.name or trade_date in file_path.name:
+                    # 检查文件名是否匹配日期模式
+                    name = file_path.name
+                    is_match = (
+                        pattern_original_start.search(name) or
+                        pattern_original_underscore.search(name) or
+                        pattern_normalized_start.search(name) or
+                        pattern_normalized_underscore.search(name)
+                    )
+                    if is_match:
                         files.append(file_path)
-                    # 也检查父目录名
+                    # 也检查父目录名（目录名使用简单包含检查）
                     elif normalized_date in str(file_path.parent) or trade_date in str(file_path.parent):
                         files.append(file_path)
         
@@ -208,20 +230,22 @@ class FreshnessChecker:
     def check_stable(
         self, 
         trade_date: str, 
-        debounce_seconds: int = 30
+        debounce_seconds: int = 30,
+        stop_event = None
     ) -> Optional[FreshnessResult]:
         """
         防抖检查，等待指定时间后再次确认数据稳定性
         
         原理:
         1. 第一次检查获取结果
-        2. 等待debounce_seconds秒
+        2. 等待debounce_seconds秒（分段睡眠，支持停止信号）
         3. 第二次检查获取结果
         4. 如果两次新鲜度比例差异小于1%，认为数据已稳定
         
         Args:
             trade_date: 交易日期
             debounce_seconds: 防抖等待时间（秒），默认30秒
+            stop_event: threading.Event，如果设置则提前返回 None
             
         Returns:
             FreshnessResult: 如果数据稳定返回结果，否则返回None
@@ -238,9 +262,13 @@ class FreshnessChecker:
             f"total={result1.total_count}"
         )
         
-        # 等待防抖时间
-        logger.debug(f"等待 {debounce_seconds} 秒...")
-        time.sleep(debounce_seconds)
+        # 分段睡眠，检查停止信号
+        logger.debug(f"等待 {debounce_seconds} 秒（分段睡眠，可中断）...")
+        for _ in range(int(debounce_seconds)):
+            if stop_event and stop_event.is_set():
+                logger.info("收到停止信号，中断防抖检查")
+                return None
+            time.sleep(1)
         
         # 第二次检查
         result2 = self.check(trade_date)
