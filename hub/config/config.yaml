@@ -2,7 +2,7 @@ hub:
   data_dir: "F:\\xbx_datas"
   cache_dir: "F:\\xbx_datas\\.cache"
   state_file: "hub_state.json"
-  calendar_file: "config/trading_calendar.json"
+  calendar_file: "config/period_offset.csv"
   
   # 调度器配置
   scheduler:
@@ -32,7 +32,7 @@ packaging:
 
 # 日历配置（用于server.py）
 calendar:
-  period_offset_file: "F:\\xbx_datas\\period_offset.csv"
+  period_offset_file: "config/period_offset.csv"
 
 # 数据集配置
 datasets:

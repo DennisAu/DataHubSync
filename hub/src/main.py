@@ -60,17 +60,20 @@ def main():
         
         # 初始化状态管理器
         state_file = config['hub'].get('state_file', 'hub_state.json')
-        state_manager = StateManager(state_file)
+        # 使用相对于main.py的路径
+        state_file_path = Path(__file__).parent.parent / state_file
+        state_manager = StateManager(str(state_file_path))
         
         # 初始化日历读取器
-        calendar_file = config['hub'].get('calendar_file', 'trading_calendar.json')
-        calendar_reader = CalendarReader(calendar_file)
+        calendar_file = config['hub'].get('calendar_file', 'trading_calendar.csv')
+        # 使用相对于main.py的路径
+        calendar_file_path = Path(__file__).parent.parent / calendar_file
+        calendar_reader = CalendarReader(str(calendar_file_path))
         
         # 初始化调度器
         scheduler = Scheduler(
-            state_manager=state_manager,
-            calendar_reader=calendar_reader,
-            config=config
+            config=config,
+            state_manager=state_manager
         )
         
         # 初始化HTTP服务器

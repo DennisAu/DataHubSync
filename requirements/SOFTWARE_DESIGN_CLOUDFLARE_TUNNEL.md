@@ -1,8 +1,8 @@
 # DataHubSync - 软件设计文档
 
-> **版本**: 2.0 - 极简设计  
-> **更新日期**: 2025-02-04  
-> **项目路径**: `/opt/projects/DataHubSync`
+> **版本**: 2.1 - 新鲜度规则调整  
+> **更新日期**: 2026-02-04  
+> **项目路径**: `/opt/projects/DataHubSync`（仓库示例路径；hub 运行于 Windows，客户端示例为 Linux）
 
 ---
 
@@ -30,9 +30,10 @@
 │  │ • 生成 CSV 文件 │      │  │ Data Freshness      │    │   │
 │  │ • 更新数据目录  │      │  │ Checker             │    │   │
 │  └─────────────────┘      │  │                     │    │   │
-│                           │  │ • 扫描目录 mtime    │    │   │
-│                           │  │ • 对比交易日历      │    │   │
-│                           │  │ • 85% 阈值判断      │    │   │
+│                           │  │ • 扫描 CSV mtime    │    │   │
+│                           │  │ • 统计多数分钟      │    │   │
+│                           │  │ • newer_ratio>=0.30 │    │   │
+│                           │  │ • 60s 防抖          │    │   │
 │                           │  │ • 触发打包          │    │   │
 │                           │  └─────────────────────┘    │   │
 │                           │              │               │   │
@@ -75,6 +76,15 @@
 
 ---
 
+### 2.1 Cloudflare Tunnel 要点
+
+- hub 上运行 cloudflared（Windows 服务），对外暴露 HTTPS 入口
+- 公网域名指向 Tunnel，转发到本地 HTTP Server
+- 客户端仅需 HTTPS 访问，不安装额外软件
+- 可选：通过 Cloudflare Access 或 IP 白名单做访问控制
+
+---
+
 ## 3. 核心概念
 
 ### 3.1 数据表（Dataset）
@@ -89,18 +99,23 @@
 
 ### 3.2 数据新鲜度
 
-**判断标准**：数据表中 **85%** 以上文件的 `mtime` >= 上一个交易日
+**判断标准（数据表级别）**：
+
+1. 扫描数据目录下所有 CSV 文件的 `mtime`，按分钟粒度取整（由 `freshness.mtime_granularity` 指定，默认 minute）。
+2. 统计出现次数最多的分钟（majority-minute），作为数据表的 `majority_minute`。
+3. 计算 `newer_ratio` = `mtime > hub.last_updated` 的 CSV 数量 / CSV 总数。
+4. 当 `newer_ratio >= 0.30` 且距离上次触发打包 >= 60s，认为数据已更新并触发打包。
+
+> 不依赖交易日历文件，仅基于数据目录内 CSV 文件的 mtime。  
+> 时间格式统一为 ISO8601，示例使用 +08:00。
 
 ```
-交易日历 (period_offset.csv):
-2025-02-03  (周一)
-2025-02-04  (周二)  ← 今天
-2025-02-05  (周三)  ← 下一个交易日
-
-今天 2月4日：
-- 上一个交易日 = 2月3日
-- 如果 85% 文件的 mtime >= 2025-02-03 00:00
-- 则认为数据已更新到 2月3日
+示例：
+hub.last_updated = 2025-02-04T20:15:00+08:00
+扫描 5600 个 CSV：
+- 2100 个 mtime > hub.last_updated (newer_ratio = 0.375)
+- majority_minute = 2025-02-04T20:16:00+08:00
+=> newer_ratio >= 0.30 且防抖通过，触发打包并更新 last_updated
 ```
 
 ### 3.3 预打包流程
@@ -111,8 +126,10 @@
     ▼
 ┌─────────────────┐
 │ 新鲜度检测      │
-│ • 扫描目录      │
-│ • 85% 阈值判断  │
+│ • 扫描 CSV      │
+│ • 多数分钟统计  │
+│ • newer_ratio>=0.30 │
+│ • 60s 防抖      │
 └────────┬────────┘
          │ 达标
          ▼
@@ -144,11 +161,11 @@ GET /api/datasets
 **响应：**
 ```json
 {
-  "generated_at": "2025-02-04T20:30:00Z",
+  "generated_at": "2025-02-04T20:30:00+08:00",
   "datasets": [
     {
       "name": "stock-trading-data-pro",
-      "last_updated": "2025-02-04T20:15:00Z",
+      "last_updated": "2025-02-04T20:15:00+08:00",
       "file_count": 5600,
       "total_size": 560000000,
       "package_ready": true,
@@ -156,11 +173,19 @@ GET /api/datasets
     },
     {
       "name": "stock-fin-data-xbx", 
-      "last_updated": "2025-02-04T07:05:00Z",
+      "last_updated": "2025-02-04T07:05:00+08:00",
       "file_count": 3200,
       "total_size": 32000000,
       "package_ready": true,
       "package_size": 10000000
+    },
+    {
+      "name": "stock-etf-trading-data",
+      "last_updated": "2025-02-04T20:10:00+08:00",
+      "file_count": 200,
+      "total_size": 20000000,
+      "package_ready": true,
+      "package_size": 6000000
     }
   ]
 }
@@ -182,6 +207,8 @@ GET /package/stock-trading-data-pro.zip
 ---
 
 ## 5. 客户端同步流程
+
+> 客户端脚本需兼容 Linux/Windows。示例以 Linux 路径，Windows 请替换为对应盘符路径。Hub 运行于 Windows（数据路径示例见 6.1）。
 
 ```python
 # 伪代码
@@ -217,7 +244,7 @@ def sync_dataset(dataset_name):
     log(f"{dataset_name} synced successfully")
 
 
-# 每日 8:15 执行
+# 每日 8:15 执行（本地时间 +08:00）
 def main():
     datasets = ["stock-trading-data-pro", "stock-fin-data-xbx"]
     
@@ -245,14 +272,19 @@ server:
 datasets:
   - name: "stock-trading-data-pro"
     path: "stock-trading-data-pro"
-    freshness_threshold: 0.85
+    newer_ratio_threshold: 0.30
     
   - name: "stock-fin-data-xbx"
     path: "stock-fin-data-xbx"
-    freshness_threshold: 0.85
-    
-calendar:
-  period_offset_file: "F:\\xbx_datas\\period_offset.csv"
+    newer_ratio_threshold: 0.30
+
+  - name: "stock-etf-trading-data"
+    path: "stock-etf-trading-data"
+    newer_ratio_threshold: 0.30
+
+freshness:
+  debounce_seconds: 60
+  mtime_granularity: "minute"
   
 packaging:
   format: "zip"
@@ -265,16 +297,24 @@ packaging:
 class DataFreshnessChecker:
     """数据新鲜度检测器"""
     
-    def check(self, dataset_path: str, threshold: float = 0.85) -> FreshnessResult:
+    def check(
+        self,
+        dataset_path: str,
+        hub_last_updated: datetime,
+        newer_ratio_threshold: float = 0.30,
+        debounce_seconds: int = 60,
+        mtime_granularity: str = "minute",
+    ) -> FreshnessResult:
         """
         检查数据目录新鲜度
         
         Returns:
-            is_fresh: 是否达到新鲜度阈值
-            last_updated: 85%分位数文件的mtime
-            fresh_ratio: 新鲜文件比例
-            fresh_count: 新鲜文件数
+            is_fresh: 是否达到阈值（newer_ratio>=0.30 且防抖通过）
+            last_updated: majority_minute（作为新的 last_updated）
+            newer_ratio: mtime > hub_last_updated 的比例
+            newer_count: 新于 hub 的文件数
             total_count: 总文件数
+            mtime_granularity: mtime 粒度（minute）
         """
         pass
 
@@ -318,13 +358,13 @@ class DataServer:
 
 ## 8. 流量成本
 
-| 云厂商 | 入站流量（下载） | 出站流量（上传） |
+| 云厂商 | 入站流量（客户端→云厂商） | 出站流量（云厂商→客户端） |
 |--------|-----------------|-----------------|
 | 阿里云/腾讯云 | **免费** ✅ | 收费 |
 
-**成本 = 0**
-- 客户端下载 zip：入站流量免费
-- hub 上传：通过 Cloudflare Tunnel（免费）
+**当前方案成本 = 0（本地 Hub + Cloudflare Tunnel）**
+- 客户端下载通过 Cloudflare Tunnel 访问本地 Hub，不使用云厂商出站
+- 若改为云厂商托管/出站带宽方案，可能产生出站费用
 
 ---
 
@@ -351,19 +391,19 @@ class DataServer:
 ## 10. 时间线示例
 
 ```
-2月4日 交易日
+2月4日 交易日（本地时间 +08:00）
 ──────────────────────────────────────────────────────►
   20:00     20:15       20:20       次日 8:15     9:15
     │          │          │            │          │
     ▼          ▼          ▼            ▼          ▼
 ┌────────┐ ┌────────┐ ┌────────┐  ┌────────┐ ┌────────┐
 │ 数据   │ │ 检测   │ │ 打包   │  │ 客户端 │ │ 开始   │
-│ 更新   │ │ 85%    │ │ 完成   │  │ 同步   │ │ 交易   │
+│ 更新   │ │ 30%    │ │ 完成   │  │ 同步   │ │ 交易   │
 │ 完成   │ │ 达标   │ │ zip    │  │        │ │        │
 └────────┘ └────────┘ └────────┘  └────────┘ └────────┘
-              │
-              ▼
-        last_updated = "2025-02-04T20:15:00Z"
+             │
+             ▼
+       last_updated = "2025-02-04T20:16:00+08:00"
 ```
 
 ---
@@ -374,3 +414,4 @@ class DataServer:
 |------|------|------|
 | 1.0 | 2025-02-03 | 初始设计，支持增量更新 |
 | 2.0 | 2025-02-04 | 极简设计，取消增量，预打包优先 |
+| 2.1 | 2026-02-04 | 新鲜度改为多数分钟 + newer_ratio>=0.30，加入 60s 防抖，取消交易日历 |

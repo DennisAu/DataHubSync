@@ -60,7 +60,13 @@ class Scheduler:
         self.keep_versions = packaging_config.get('keep_versions', 5)
         
         # 初始化依赖组件
-        self.calendar_reader = CalendarReader(calendar_config.get('period_offset_file', ''))
+        calendar_file = calendar_config.get('period_offset_file', '')
+        if calendar_file:
+            # 使用相对于scheduler.py的路径
+            calendar_file_path = Path(__file__).parent.parent / calendar_file
+            self.calendar_reader = CalendarReader(str(calendar_file_path))
+        else:
+            self.calendar_reader = CalendarReader('')
         self.freshness_checker = FreshnessChecker(self.data_root, datasets_config)
         self.packager = Packager(self.cache_dir, self.keep_versions)
         

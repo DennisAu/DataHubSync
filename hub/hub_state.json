@@ -1,0 +1,38 @@
+{
+  "stock-trading-data-pro": {
+    "status": "not_fresh",
+    "state_updated_at": "2026-02-04T17:54:03.487625",
+    "freshness": {
+      "total_count": 13152,
+      "fresh_count": 6888,
+      "fresh_ratio": 0.5237,
+      "last_updated": "2026-02-04T08:29:51.444452",
+      "is_fresh": false
+    },
+    "last_checked": "2026-02-04T17:54:03"
+  },
+  "stock-fin-data-xbx": {
+    "status": "not_fresh",
+    "state_updated_at": "2026-02-04T17:54:03.923975",
+    "freshness": {
+      "total_count": 13152,
+      "fresh_count": 6888,
+      "fresh_ratio": 0.5237,
+      "last_updated": "2026-02-04T08:29:51.444452",
+      "is_fresh": false
+    },
+    "last_checked": "2026-02-04T17:54:03"
+  },
+  "stock-etf-trading-data": {
+    "status": "not_fresh",
+    "state_updated_at": "2026-02-04T17:54:04.355869",
+    "freshness": {
+      "total_count": 13152,
+      "fresh_count": 6888,
+      "fresh_ratio": 0.5237,
+      "last_updated": "2026-02-04T08:29:51.444452",
+      "is_fresh": false
+    },
+    "last_checked": "2026-02-04T17:54:04"
+  }
+}

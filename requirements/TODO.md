@@ -1,8 +1,8 @@
-# DataHubSync - 项目待办清单 (v2.0 极简设计)
+# DataHubSync - 项目待办清单 (v2.1 新鲜度规则调整)
 
-> **项目路径**：`/opt/projects/DataHubSync`  
-> **设计版本**：v2.0 - 极简设计  
-> **更新日期**：2025-02-04
+> **项目路径**：仓库根目录（hub 运行于 Windows，客户端示例为 Linux）  
+> **设计版本**：v2.1 - 新鲜度规则调整  
+> **更新日期**：2026-02-04
 
 ---
 
@@ -22,24 +22,28 @@
 ### Phase 1: hub 端核心功能
 
 #### 任务1.1: 新鲜度检测器
-**目标**: 实现数据表新鲜度检测，85%阈值，10分钟轮询，30秒防抖
+**目标**: 实现数据表（dataset级别）新鲜度检测，基于 mtime 分钟多数判定，newer_ratio>=0.30，10分钟轮询，60秒防抖
 
 **验收标准**:
-- [ ] 读取 `period_offset.csv` 获取交易日历
-- [ ] 扫描数据目录，计算新鲜文件比例
-- [ ] 超过85%阈值时，启动30秒防抖观察
-- [ ] 30秒内新鲜度稳定（不再变化）→ 触发打包
-- [ ] 30秒内新鲜度仍在变化 → 跳过，等下一轮
-- [ ] 每10分钟执行一次检查
+- [ ] 按 dataset 级别扫描数据目录，基于文件 mtime 的分钟粒度统计
+- [ ] 以多数分钟（majority-minute）作为当前数据版本（并列时取最新分钟）
+- [ ] 计算 `newer_ratio`（多数分钟文件数 / 总文件数）
+- [ ] `newer_ratio >= 0.30` 时，启动 60 秒防抖观察
+- [ ] 60 秒内 `newer_ratio` 稳定（不再变化）→ 触发打包
+- [ ] 60 秒内 `newer_ratio` 仍在变化 → 跳过，等下一轮
+- [ ] 每 10 分钟执行一次检查
 
 **关键逻辑**:
 ```python
-if fresh_ratio >= 0.85:
-    # 启动30秒防抖
-    time.sleep(30)
-    fresh_ratio_2 = recalculate()
+majority_minute = get_majority_minute(file_mtime_minutes)
+newer_ratio = count_at_minute(majority_minute) / total_files
+
+if newer_ratio >= 0.30:
+    # 启动60秒防抖
+    time.sleep(60)
+    newer_ratio_2 = recalculate()
     
-    if abs(fresh_ratio_2 - fresh_ratio) < 0.01:  # 基本稳定
+    if abs(newer_ratio_2 - newer_ratio) < 0.01:  # 基本稳定（变化 < 1%）
         trigger_packaging()
     else:
         # 仍在变化，跳过
@@ -103,6 +107,7 @@ if fresh_ratio >= 0.85:
 - [ ] 如果远程更新，下载 zip
 - [ ] 解压覆盖本地数据
 - [ ] 更新本地时间戳
+- [ ] 同步脚本兼容 Linux/Windows（路径按系统适配）
 - [ ] 支持 curl -C 断点续传
 
 #### 任务2.2: 客户端配置
@@ -113,21 +118,23 @@ if fresh_ratio >= 0.85:
 - [ ] `.last_sync.json` - 各数据表同步时间戳
 
 #### 任务2.3: 部署和定时任务
-**目标**: Linux 客户端部署
+**目标**: Linux/Windows 客户端部署
 
 **验收标准**:
-- [ ] 部署到 `/opt/datahubsync/`
-- [ ] `sync.sh` 执行脚本
-- [ ] crontab: `15 8 * * *` (每日8:15)
-- [ ] 日志输出到 `logs/sync.log`
+- [ ] Linux: 部署到 `/opt/datahubsync/`
+- [ ] Linux: `sync.sh` 执行脚本
+- [ ] Linux: crontab: `15 8 * * *` (每日8:15)
+- [ ] Linux: 日志输出到 `logs/sync.log`
+- [ ] Windows: 提供等价运行脚本（如 sync.ps1 或 .bat）
+- [ ] Windows: 任务计划程序定时执行（示例）
 
 ---
 
 ### Phase 3: 测试验证
 
 #### 任务3.1: hub 端测试
-- [ ] 新鲜度检测正确（85%阈值）
-- [ ] 防抖机制有效（30秒观察）
+- [ ] 新鲜度检测正确（30%阈值）
+- [ ] 防抖机制有效（60秒观察）
 - [ ] 定时检查正常（10分钟间隔）
 - [ ] HTTP 端点可用
 - [ ] zip 下载正常
@@ -141,20 +148,22 @@ if fresh_ratio >= 0.85:
 #### 任务3.3: 集成测试
 - [ ] 完整流程：数据更新 → 新鲜度检测 → 打包 → 客户端同步
 - [ ] 6台客户端并发下载
+- [ ] 客户端数量以 6 台为准（Phase 4 补齐清单）
 - [ ] 8:15 前完成同步
 
 ---
 
 ### Phase 4: 多客户端部署
 
-**目标**: 部署到其他5台客户端
+**目标**: 部署到6台客户端
 
 **服务器列表**:
 - [ ] 客户端1: 局域网
 - [ ] 客户端2: 局域网
-- [ ] 客户端3: 北京机房
-- [ ] 客户端4: 日本机房
-- [ ] 客户端5: 美国机房
+- [ ] 客户端3: 局域网
+- [ ] 客户端4: 北京机房
+- [ ] 客户端5: 日本机房
+- [ ] 客户端6: 美国机房
 
 **每台执行**:
 1. 复制同步脚本
@@ -171,7 +180,6 @@ if fresh_ratio >= 0.85:
 C:\DataHubSync\
 ├── config.yaml                    # 配置
 ├── datasets_state.json            # 数据表状态
-├── period_offset.csv              # 交易日历（用户提供）
 ├── server.py                      # 入口
 ├── src\
 │   ├── __init__.py
@@ -179,15 +187,21 @@ C:\DataHubSync\
 │   ├── packager.py                # 异步打包
 │   ├── http_server.py             # HTTP服务
 │   └── scheduler.py               # 定时调度
-├── .cache\                        # zip 缓存
-│   ├── stock-trading-data-pro_20250204_201500.zip
-│   └── stock-fin-data-xbx_20250204_070500.zip
 └── logs\                          # 日志
     ├── server.log
     └── freshness.log
+
+F:\xbx_datas\                      # 数据目录
+├── stock-trading-data-pro\
+├── stock-fin-data-xbx\
+├── stock-etf-trading-data\
+└── .cache\                        # zip 缓存
+    ├── stock-trading-data-pro_20250204_201500.zip
+    └── stock-fin-data-xbx_20250204_070500.zip
 ```
 
-### 客户端 (Linux)
+### 客户端 (Linux/Windows)
+> 客户端示例为 Linux 路径，Windows 请按实际盘符替换。
 ```
 /opt/datahubsync/
 ├── config.yaml                    # 配置
@@ -217,17 +231,17 @@ server:
 datasets:
   - name: "stock-trading-data-pro"
     path: "stock-trading-data-pro"
-    freshness_threshold: 0.85
+    newer_ratio_threshold: 0.30
   - name: "stock-fin-data-xbx"
     path: "stock-fin-data-xbx"
-    freshness_threshold: 0.85
-
-calendar:
-  period_offset_file: "F:\\xbx_datas\\period_offset.csv"
+    newer_ratio_threshold: 0.30
+  - name: "stock-etf-trading-data"
+    path: "stock-etf-trading-data"
+    newer_ratio_threshold: 0.30
 
 check:
   interval_minutes: 10
-  debounce_seconds: 30
+  debounce_seconds: 60
 
 packaging:
   format: "zip"
@@ -272,8 +286,8 @@ logging:
 
 - [需求文档](requirements/REQUIREMENTS_CLOUDFLARE_TUNNEL.md)
 - [设计文档 v2.0](requirements/SOFTWARE_DESIGN_CLOUDFLARE_TUNNEL.md)
-- [项目 README](/opt/projects/DataHubSync/README.md)
+- [项目 README](README.md)
 
 ---
 
-*更新时间: 2025-02-04*
+*更新时间: 2026-02-04*

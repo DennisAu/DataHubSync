@@ -41,12 +41,51 @@ class CalendarReader:
         
         内部方法，用于加载和缓存交易日数据。
         日期按升序排序存储。
+        自动检测文件编码和是否需要跳过第一行。
         """
         trade_dates = set()
         
-        with open(self.csv_path, 'r', encoding='utf-8-sig') as f:
-            # 使用 csv.DictReader 读取带标题的CSV
-            reader = csv.DictReader(f)
+        # 尝试不同的编码
+        encodings = ['utf-8-sig', 'utf-8', 'gbk', 'cp936']
+        
+        for encoding in encodings:
+            try:
+                with open(self.csv_path, 'r', encoding=encoding) as f:
+                    # 读取前几行来判断格式
+                    first_line = f.readline().strip()
+                    second_line = f.readline().strip()
+                    f.seek(0)
+                    
+                    # 判断是否需要跳过第一行
+                    skip_first_line = False
+                    if '交易日期' not in first_line and '交易日期' in second_line:
+                        skip_first_line = True
+                        next(f)  # 跳过第一行
+                    
+                    reader = csv.DictReader(f)
+                    
+                    # 检查必要的列是否存在
+                    if reader.fieldnames is None or '交易日期' not in reader.fieldnames:
+                        raise ValueError(f"CSV文件必须包含 '交易日期' 列，当前列: {reader.fieldnames}")
+                    
+                    for row in reader:
+                        date_str = row.get('交易日期', '').strip()
+                        if date_str:
+                            # 验证日期格式
+                            try:
+                                datetime.strptime(date_str, '%Y-%m-%d')
+                                trade_dates.add(date_str)
+                            except ValueError:
+                                # 跳过格式不正确的日期
+                                continue
+                    
+                    # 成功读取，跳出编码循环
+                    break
+                    
+            except (UnicodeDecodeError, ValueError) as e:
+                if encoding == encodings[-1]:  # 最后一种编码也失败了
+                    raise
+                continue
             
             # 检查必要的列是否存在
             if reader.fieldnames is None or '交易日期' not in reader.fieldnames:
