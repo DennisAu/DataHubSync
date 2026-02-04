@@ -1,0 +1,29 @@
+# DataHubSync 客户端配置示例
+# 复制此文件为 config.yaml 并根据需要修改
+
+hub:
+  # hub服务器URL（必须）
+  url: "https://data.quantrade.fun"
+  # 请求超时时间（秒，可选，默认300）
+  timeout: 300
+
+# 要同步的数据集列表（可选）
+datasets:
+  # 股票交易数据
+  - name: "stock-trading-data-pro"
+    local_dir: "/data/stock-trading-data-pro"
+  
+  # 股票财务数据
+  - name: "stock-fin-data-xbx"
+    local_dir: "/data/stock-fin-data-xbx"
+  
+  # ETF交易数据
+  - name: "stock-etf-trading-data"
+    local_dir: "/data/stock-etf-trading-data"
+
+# 日志配置（可选）
+logging:
+  # 日志级别: DEBUG, INFO, WARNING, ERROR（可选，默认INFO）
+  level: "INFO"
+  # 日志文件路径（可选，默认只输出到控制台）
+  file: "logs/sync.log"

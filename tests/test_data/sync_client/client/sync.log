@@ -1,0 +1,132 @@
+2026-02-04 15:43:19,010 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:43:19,010 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='2322739258304'>
+2026-02-04 15:43:19,032 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:43:19,032 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='2322739263680'>
+2026-02-04 15:43:19,034 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:43:19,039 - sync_client - ERROR - Failed to extract e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip: File is not a zip file
+2026-02-04 15:43:19,040 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\test.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:43:19,050 - sync_client - INFO - Extracted 2 files to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:43:19,056 - sync_client - ERROR - Failed to fetch datasets: Connection error
+2026-02-04 15:43:19,058 - sync_client - ERROR - Failed to fetch datasets: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='2322740023312'>: <MagicMock name='HTTPSConnection().getresponse().reason' id='2322740024320'>
+2026-02-04 15:43:19,065 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:43:19,066 - sync_client - INFO - Dataset stock-trading-data-pro package not ready
+2026-02-04 15:43:19,067 - sync_client - INFO - Dataset stock-trading-data-pro remote newer: local=2025-02-03T20:15:00Z, remote=2025-02-04T20:15:00Z
+2026-02-04 15:43:19,067 - sync_client - INFO - Dataset stock-trading-data-pro up to date: 2025-02-04T20:15:00Z
+2026-02-04 15:43:19,075 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:43:19,076 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:43:19,076 - sync_client - ERROR - Failed to sync stock-trading-data-pro: name 'timezone' is not defined
+2026-02-04 15:43:19,078 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:43:19,078 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:43:19,079 - sync_client - INFO - Successfully synced dataset: stock-trading-data-pro
+2026-02-04 15:43:19,079 - sync_client - ERROR - Failed to sync stock-trading-data-pro: name 'timezone' is not defined
+2026-02-04 15:43:19,081 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:43:19,081 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:43:19,105 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to C:\Users\Dennis\.datahub_sync\temp\stock-trading-data-pro_1770190999.zip
+2026-02-04 15:43:20,021 - sync_client - ERROR - Failed to download stock-trading-data-pro: [Errno 11001] getaddrinfo failed
+2026-02-04 15:43:20,022 - sync_client - ERROR - Failed to sync stock-trading-data-pro: name 'timezone' is not defined
+2026-02-04 15:43:33,641 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:43:33,642 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1810754986944'>
+2026-02-04 15:43:33,653 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:43:33,654 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1810754992320'>
+2026-02-04 15:43:33,656 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:43:33,656 - sync_client - ERROR - Failed to extract e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip: File is not a zip file
+2026-02-04 15:43:33,657 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\test.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:43:33,672 - sync_client - INFO - Extracted 2 files to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:43:33,673 - sync_client - ERROR - Failed to fetch datasets: Connection error
+2026-02-04 15:43:33,675 - sync_client - ERROR - Failed to fetch datasets: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1810755751952'>: <MagicMock name='HTTPSConnection().getresponse().reason' id='1810755752960'>
+2026-02-04 15:43:33,678 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:43:33,679 - sync_client - INFO - Dataset stock-trading-data-pro package not ready
+2026-02-04 15:43:33,680 - sync_client - INFO - Dataset stock-trading-data-pro remote newer: local=2025-02-03T20:15:00Z, remote=2025-02-04T20:15:00Z
+2026-02-04 15:43:33,681 - sync_client - INFO - Dataset stock-trading-data-pro up to date: 2025-02-04T20:15:00Z
+2026-02-04 15:43:33,684 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:43:33,684 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:43:33,685 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:43:33,685 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:43:33,685 - sync_client - INFO - Successfully synced dataset: stock-trading-data-pro
+2026-02-04 15:43:33,687 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:43:33,687 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:43:33,699 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to C:\Users\Dennis\.datahub_sync\temp\stock-trading-data-pro_1770191013.zip
+2026-02-04 15:43:33,704 - sync_client - ERROR - Failed to download stock-trading-data-pro: [Errno 11001] getaddrinfo failed
+2026-02-04 15:44:02,534 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:44:02,535 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='2828089203344'>
+2026-02-04 15:44:22,655 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:44:22,656 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='2316883647120'>
+2026-02-04 15:44:33,260 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:44:33,261 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1664580704912'>
+2026-02-04 15:45:07,737 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:45:07,737 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='2591613573776'>
+2026-02-04 15:45:28,074 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:45:28,075 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1871883786896'>
+2026-02-04 15:45:40,924 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:45:40,925 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='2611629644432'>
+2026-02-04 15:46:33,548 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:46:33,548 - sync_client - INFO - Downloaded e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip (193 bytes)
+2026-02-04 15:46:43,416 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:46:43,416 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1666861835200'>
+2026-02-04 15:46:43,529 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:46:43,529 - sync_client - INFO - Downloaded e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip (193 bytes)
+2026-02-04 15:46:43,632 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:46:43,632 - sync_client - ERROR - Failed to extract e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip: File is not a zip file
+2026-02-04 15:46:43,734 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\test.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:46:43,748 - sync_client - INFO - Extracted 2 files to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:46:43,850 - sync_client - ERROR - Failed to fetch datasets: Connection error
+2026-02-04 15:46:43,952 - sync_client - ERROR - Failed to fetch datasets: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1666861831168'>: <MagicMock name='HTTPSConnection().getresponse().reason' id='1666861838560'>
+2026-02-04 15:46:44,358 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:46:44,459 - sync_client - INFO - Dataset stock-trading-data-pro package not ready
+2026-02-04 15:46:44,560 - sync_client - INFO - Dataset stock-trading-data-pro remote newer: local=2025-02-03T20:15:00Z, remote=2025-02-04T20:15:00Z
+2026-02-04 15:46:44,662 - sync_client - INFO - Dataset stock-trading-data-pro up to date: 2025-02-04T20:15:00Z
+2026-02-04 15:46:44,966 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:46:44,967 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:46:45,068 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:46:45,068 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:46:45,068 - sync_client - INFO - Successfully synced dataset: stock-trading-data-pro
+2026-02-04 15:46:45,170 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:46:45,170 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:46:45,183 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to C:\Users\Dennis\.datahub_sync\temp\stock-trading-data-pro_1770191205.zip
+2026-02-04 15:46:45,205 - sync_client - ERROR - Failed to download stock-trading-data-pro: [Errno 11001] getaddrinfo failed
+2026-02-04 15:52:21,668 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:52:21,668 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1719516685248'>
+2026-02-04 15:52:21,786 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 15:52:21,787 - sync_client - INFO - Downloaded e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip (193 bytes)
+2026-02-04 15:52:21,890 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:52:21,890 - sync_client - ERROR - Failed to extract e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip: File is not a zip file
+2026-02-04 15:52:21,992 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\test.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:52:22,017 - sync_client - INFO - Extracted 2 files to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 15:52:22,119 - sync_client - ERROR - Failed to fetch datasets: Connection error
+2026-02-04 15:52:22,222 - sync_client - ERROR - Failed to fetch datasets: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1719516681216'>: <MagicMock name='HTTPSConnection().getresponse().reason' id='1719516688608'>
+2026-02-04 15:52:22,628 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:52:22,730 - sync_client - INFO - Dataset stock-trading-data-pro package not ready
+2026-02-04 15:52:22,830 - sync_client - INFO - Dataset stock-trading-data-pro remote newer: local=2025-02-03T20:15:00Z, remote=2025-02-04T20:15:00Z
+2026-02-04 15:52:22,932 - sync_client - INFO - Dataset stock-trading-data-pro up to date: 2025-02-04T20:15:00Z
+2026-02-04 15:52:23,237 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:52:23,237 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:52:23,339 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:52:23,339 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:52:23,340 - sync_client - INFO - Successfully synced dataset: stock-trading-data-pro
+2026-02-04 15:52:23,441 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 15:52:23,442 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 15:52:23,453 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to C:\Users\Dennis\.datahub_sync\temp\stock-trading-data-pro_1770191543.zip
+2026-02-04 15:52:23,462 - sync_client - ERROR - Failed to download stock-trading-data-pro: [Errno 11001] getaddrinfo failed
+2026-02-04 16:11:18,090 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 16:11:18,090 - sync_client - ERROR - Download failed: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1328517817280'>
+2026-02-04 16:11:18,210 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip
+2026-02-04 16:11:18,210 - sync_client - INFO - Downloaded e:\projects\DataAborder\tests\test_data\sync_client\cache\downloaded.zip (193 bytes)
+2026-02-04 16:11:18,313 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 16:11:18,318 - sync_client - ERROR - Failed to extract e:\projects\DataAborder\tests\test_data\sync_client\cache\invalid.zip: File is not a zip file
+2026-02-04 16:11:18,420 - sync_client - INFO - Extracting e:\projects\DataAborder\tests\test_data\sync_client\cache\test.zip to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 16:11:18,430 - sync_client - INFO - Extracted 2 files to e:\projects\DataAborder\tests\test_data\sync_client\data\test-dataset
+2026-02-04 16:11:18,532 - sync_client - ERROR - Failed to fetch datasets: Connection error
+2026-02-04 16:11:18,634 - sync_client - ERROR - Failed to fetch datasets: HTTP <MagicMock name='HTTPSConnection().getresponse().status' id='1328517813248'>: <MagicMock name='HTTPSConnection().getresponse().reason' id='1328517820640'>
+2026-02-04 16:11:19,041 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 16:11:19,143 - sync_client - INFO - Dataset stock-trading-data-pro package not ready
+2026-02-04 16:11:19,244 - sync_client - INFO - Dataset stock-trading-data-pro remote newer: local=2025-02-03T20:15:00Z, remote=2025-02-04T20:15:00Z
+2026-02-04 16:11:19,346 - sync_client - INFO - Dataset stock-trading-data-pro up to date: 2025-02-04T20:15:00Z
+2026-02-04 16:11:19,650 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 16:11:19,650 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 16:11:19,752 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 16:11:19,752 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 16:11:19,752 - sync_client - INFO - Successfully synced dataset: stock-trading-data-pro
+2026-02-04 16:11:19,855 - sync_client - INFO - Starting sync for dataset: stock-trading-data-pro
+2026-02-04 16:11:19,855 - sync_client - INFO - Dataset stock-trading-data-pro not found locally, need sync
+2026-02-04 16:11:19,868 - sync_client - INFO - Downloading /package/stock-trading-data-pro.zip to C:\Users\Dennis\.datahub_sync\temp\stock-trading-data-pro_1770192679.zip
+2026-02-04 16:11:19,886 - sync_client - ERROR - Failed to download stock-trading-data-pro: [Errno 11001] getaddrinfo failed

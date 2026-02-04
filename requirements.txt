@@ -1,0 +1,8 @@
+# DataHubSync Requirements
+# Core dependencies for DataHub client and server
+
+# YAML parsing
+PyYAML>=6.0
+
+# Standard library modules are used wherever possible
+# No additional dependencies required for basic functionality
