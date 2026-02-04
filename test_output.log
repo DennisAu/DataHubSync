@@ -1,0 +1,27 @@
+2026-02-04 17:32:21,027 [INFO] __main__: Logging configured
+2026-02-04 17:32:21,027 [INFO] __main__: Loaded configuration from hub/config/config.yaml
+2026-02-04 17:32:21,027 [INFO] state_manager: State file not found, initializing empty state: hub\hub_state.json
+2026-02-04 17:32:21,027 [INFO] state_manager: StateManager initialized: state_file=hub/hub_state.json
+2026-02-04 17:32:21,027 [INFO] __main__: StateManager initialized with state file: hub/hub_state.json
+2026-02-04 17:32:21,027 [INFO] __main__: Signal handlers registered
+2026-02-04 17:32:21,028 [ERROR] __main__: Fatal error
+Traceback (most recent call last):
+  File "e:\projects\DataAborder\hub\server.py", line 211, in main
+    scheduler = Scheduler(config, state_manager)
+  File "e:\projects\DataAborder\hub\src\scheduler.py", line 63, in __init__
+    self.calendar_reader = CalendarReader(calendar_config.get('period_offset_file', ''))
+                           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\projects\DataAborder\hub\src\calendar_reader.py", line 37, in __init__
+    self._load_csv()
+    ~~~~~~~~~~~~~~^^
+  File "e:\projects\DataAborder\hub\src\calendar_reader.py", line 52, in _load_csv
+    if reader.fieldnames is None or '交易日期' not in reader.fieldnames:
+       ^^^^^^^^^^^^^^^^^
+  File "C:\Python313\Lib\csv.py", line 164, in fieldnames
+    self._fieldnames = next(self.reader)
+                       ~~~~^^^^^^^^^^^^^
+  File "<frozen codecs>", line 325, in decode
+  File "C:\Python313\Lib\encodings\utf_8_sig.py", line 69, in _buffer_decode
+    return codecs.utf_8_decode(input, errors, final)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xca in position 0: invalid continuation byte

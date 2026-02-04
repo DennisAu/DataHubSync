@@ -146,14 +146,14 @@ def parse_args() -> argparse.Namespace:
     
     parser.add_argument(
         '-c', '--config',
-        default='config.yaml',
-        help='配置文件路径 (默认: config.yaml)'
+        default='hub/config/config.yaml',
+        help='配置文件路径 (默认: hub/config/config.yaml)'
     )
     
     parser.add_argument(
         '-s', '--state',
-        default='.state.json',
-        help='状态文件路径 (默认: .state.json)'
+        default='hub/hub_state.json',
+        help='状态文件路径 (默认: hub/hub_state.json)'
     )
     
     parser.add_argument(

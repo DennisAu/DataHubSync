@@ -1,6 +1,4 @@
 hub:
-  port: 8080
-  host: "0.0.0.0"
   data_dir: "F:\\xbx_datas"
   cache_dir: "F:\\xbx_datas\\.cache"
   state_file: "hub_state.json"
@@ -15,6 +13,26 @@ hub:
   packaging:
     format: "zip"
     keep_versions: 2
+
+# HTTP服务器配置
+server:
+  port: 8080
+  host: "0.0.0.0"
+  data_root: "F:\\xbx_datas"  # server.py期望的路径
+
+# 服务器配置（用于server.py）
+check:
+  interval_minutes: 10
+  debounce_seconds: 30
+
+# 打包配置（用于server.py）
+packaging:
+  format: "zip"
+  keep_versions: 2
+
+# 日历配置（用于server.py）
+calendar:
+  period_offset_file: "F:\\xbx_datas\\period_offset.csv"
 
 # 数据集配置
 datasets:
