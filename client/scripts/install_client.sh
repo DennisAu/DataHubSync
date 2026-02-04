@@ -86,7 +86,7 @@ mkdir -p "$DATA_DIR"
 # 复制文件
 print_info "Copying files..."
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CLIENT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+CLIENT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # 复制源代码
 cp -r "$CLIENT_DIR/src" "$INSTALL_DIR/"
@@ -100,6 +100,12 @@ cp "$CLIENT_DIR/config/config_client_example.yaml" "$INSTALL_DIR/config.yaml"
 chmod 755 "$INSTALL_DIR/sync.sh"
 chmod 644 "$INSTALL_DIR/src/sync_client.py"
 chmod 644 "$INSTALL_DIR/config.yaml"
+
+# 创建配置目录（如果不存在）
+mkdir -p "$INSTALL_DIR/config"
+
+# 移动配置文件到正确位置
+mv "$INSTALL_DIR/config.yaml" "$INSTALL_DIR/config/config.yaml"
 
 # 创建同步状态文件
 touch "$INSTALL_DIR/.last_sync.json"

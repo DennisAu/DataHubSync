@@ -4,9 +4,10 @@
 
 set -e
 
-# 获取脚本所在目录
+# 获取脚本所在目录和client根目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+CLIENT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$CLIENT_DIR"
 
 # 检查Python是否可用
 if ! command -v python3 &> /dev/null; then
@@ -15,14 +16,15 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 # 检查配置文件
-if [ ! -f "config.yaml" ]; then
-    echo "Error: config.yaml not found in $SCRIPT_DIR" >&2
+if [ ! -f "config/config.yaml" ]; then
+    echo "Error: config/config.yaml not found in $CLIENT_DIR" >&2
+    echo "Please copy config/config_client_example.yaml to config/config.yaml and configure it" >&2
     exit 1
 fi
 
 # 检查同步脚本
 if [ ! -f "src/sync_client.py" ]; then
-    echo "Error: src/sync_client.py not found in $SCRIPT_DIR" >&2
+    echo "Error: src/sync_client.py not found in $CLIENT_DIR" >&2
     exit 1
 fi
 
@@ -33,7 +35,19 @@ mkdir -p logs
 echo "$(date '+%Y-%m-%d %H:%M:%S') - Starting DataHubSync" >> logs/sync.log
 
 # 运行同步
-if python3 -c "import sys; sys.path.insert(0, './src'); from sync_client import DataSyncClient; client = DataSyncClient('config.yaml'); client.sync_all()" >> logs/sync.log 2>&1; then
+if python3 -c "
+import sys
+import yaml
+sys.path.insert(0, './src')
+from sync_client import DataSyncClient
+
+# 加载配置文件
+with open('config/config.yaml', 'r', encoding='utf-8') as f:
+    config = yaml.safe_load(f)
+
+client = DataSyncClient(config, '.last_sync.json')
+client.sync_all()
+" >> logs/sync.log 2>&1; then
     echo "$(date '+%Y-%m-%d %H:%M:%S') - DataHubSync completed successfully" >> logs/sync.log
     exit 0
 else

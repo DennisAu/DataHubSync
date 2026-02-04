@@ -22,9 +22,10 @@ print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# 获取脚本所在目录
+# 获取脚本所在目录和client根目录
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+CLIENT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$CLIENT_DIR"
 
 print_info "DataHubSync Client Test"
 print_info "======================="
@@ -57,12 +58,12 @@ done
 
 # 检查配置文件
 print_info "Checking configuration files..."
-if [ ! -f "config.yaml" ]; then
-    print_error "config.yaml not found"
-    print_info "Copy config_client_example.yaml to config.yaml and configure it"
+if [ ! -f "config/config.yaml" ]; then
+    print_error "config/config.yaml not found"
+    print_info "Copy config/config_client_example.yaml to config/config.yaml and configure it"
     exit 1
 else
-    print_info "✓ config.yaml found"
+    print_info "✓ config/config.yaml found"
 fi
 
 # 检查同步脚本
@@ -88,7 +89,7 @@ import yaml
 import sys
 
 try:
-    with open('config.yaml', 'r') as f:
+    with open('config/config.yaml', 'r') as f:
         config = yaml.safe_load(f)
     
     # 检查必要字段
@@ -116,7 +117,7 @@ fi
 print_info "Testing network connectivity..."
 HUB_URL=$(python3 -c "
 import yaml
-with open('config.yaml', 'r') as f:
+with open('config/config.yaml', 'r') as f:
     config = yaml.safe_load(f)
 print(config['hub']['url'])
 ")
@@ -177,7 +178,7 @@ fi
 print_info "Checking data directories..."
 DATA_DIRS=$(python3 -c "
 import yaml
-with open('config.yaml', 'r') as f:
+with open('config/config.yaml', 'r') as f:
     config = yaml.safe_load(f)
 
 for dataset in config.get('datasets', []):
@@ -209,12 +210,12 @@ fi
 print_info "Running dry-run test..."
 if python3 -c "
 import sys
-sys.path.insert(0, '.')
+sys.path.insert(0, './src')
 from sync_client import DataSyncClient
 import yaml
 
 try:
-    with open('config.yaml', 'r') as f:
+    with open('config/config.yaml', 'r') as f:
         config = yaml.safe_load(f)
     
     client = DataSyncClient(config, '.last_sync.json')
