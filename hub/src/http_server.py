@@ -414,7 +414,7 @@ if __name__ == '__main__':
     )
     
     # 加载配置
-    config_path = Path(__file__).parent.parent / 'config.yaml'
+    config_path = Path(__file__).parent.parent / 'config' / 'config.yaml'
     with open(config_path, 'r', encoding='utf-8') as f:
         config = yaml.safe_load(f)
     

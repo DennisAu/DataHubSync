@@ -5,6 +5,7 @@ DataBorder 客户端命令行接口
 
 import sys
 import argparse
+import yaml
 from pathlib import Path
 
 # 添加当前目录到Python路径
@@ -27,8 +28,16 @@ def main():
     
     args = parser.parse_args()
     
+    # 加载配置文件
+    try:
+        with open(args.config, 'r', encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+    except Exception as e:
+        print(f"无法加载配置文件 {args.config}: {e}")
+        sys.exit(1)
+    
     # 创建客户端实例
-    client = DataSyncClient(args.config, args.state)
+    client = DataSyncClient(config, args.state)
     
     # 设置日志级别
     if args.verbose:

@@ -13,13 +13,13 @@ datasets:
   - name: "stock-trading-data-pro"
     local_dir: "/data/stock-trading-data-pro"
   
-  # 股票财务数据
-  - name: "stock-fin-data-xbx"
-    local_dir: "/data/stock-fin-data-xbx"
+  # # 股票财务数据
+  # - name: "stock-fin-data-xbx"
+  #   local_dir: "/data/stock-fin-data-xbx"
   
-  # ETF交易数据
-  - name: "stock-etf-trading-data"
-    local_dir: "/data/stock-etf-trading-data"
+  # # ETF交易数据
+  # - name: "stock-etf-trading-data"
+  #   local_dir: "/data/stock-etf-trading-data"
 
 # 日志配置（可选）
 logging:
